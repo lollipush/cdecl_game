@@ -1,0 +1,18 @@
+grammar = {
+        'Main': ( ( 'Decl', 'semicolon' ), ),
+        'Decl': ( ( 'Type', 'id', 'lpar', 'ParamList', 'rpar' ), ),
+        'Type': ( ( 'char', ) ,
+                  ( 'int', ) ,
+                  ( 'signed', ) ,
+                  ( 'unsigned', ) ,
+                  ( 'float', ) ,
+                  ( 'double', ) ,
+                  ( 'Type', 'star' ) ,
+            ),
+        'ParamList': ( ( 'Param', ),
+                       ( 'ParamList', 'dot', 'Param', ),
+                       ( ),
+            ),
+        'Param': ( ( 'Type', 'id' ),
+            ),
+}
