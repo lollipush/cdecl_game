@@ -6,6 +6,9 @@ class Token(object):
     def __str__(self):
         return '<{0} {1}>'.format(self._type, repr(self._value))
 
+    def __repr__(self):
+        return '<{0} {1}>'.format(self._type, repr(self._value))
+
 def tokenizer(s):
     i = 0
     while i < len(s):
@@ -38,9 +41,9 @@ def tokenizer(s):
                 i += 1
             v = s[t:i]
             if v in ['int', 'char', 'float', 'double', 'unsigned', 'signed', 'short', 'long']:
-                yield Token('type', s[t:i])
+                yield Token(v, v)
             else:
-                yield Token('id', s[t:i])
+                yield Token('id', v)
         elif s[i].isdigit():
             t = i
             while s[i].isdigit():

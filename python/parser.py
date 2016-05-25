@@ -1,35 +1,61 @@
 class AST(object):
     def __init__(self, _type, _value):
+        print _type, _value
         self._type = _type
         self._value = _value
         pass
 
+    def __str__(self):
+        return '<{0}>'.format(self._type)
+
+    def __repr__(self):
+        t = self._value
+        if not isinstance(t, tuple):
+            t = (t, )
+        return '<{0} [{1}]>'.format(self._type, ', '.join(map(str, t)))
+
+
 grammar = {
-        'Main': ( ( 'Decl', 'semicolon' ), ),
-        'Decl': ( ( 'Type', 'id', 'lpar', 'ParamList', 'rpar' ), ),
-        'Type': ( ( 'char', ) ,
-                  ( 'int', ) ,
-                  ( 'signed', ) ,
-                  ( 'unsigned', ) ,
-                  ( 'float', ) ,
-                  ( 'double', ) ,
-                  ( 'Type', 'star' ) ,
+        'Main': (
+                ( 'Decl', 'semicolon' ),
             ),
-        'ParamList': ( ( 'Param', ),
-                       ( 'ParamList', 'dot', 'Param', ),
-                       ( ),
+        'Decl': (
+                ( 'VarDecl', ),
+                ( 'FuncDecl', ),
+                ( 'lpar', 'Decl', 'rpar' ),
             ),
-        'Param': ( ( 'Type', 'id' ),
+        'VarDecl': (
+                ( 'Type', 'id', 'lbrkt', 'number', 'rbrkt', ),
+                ( 'Type', 'lpar', 'start', 'id', 'rpar', 'lpar', 'ParamList', 'rpar', ),
+            ),
+        'FuncDecl': (
+                ( 'Type', 'id', 'lpar', 'ParamList', 'rpar', ),
+            ),
+        'Type': (
+                ( 'char', ) ,
+                ( 'int', ) ,
+                ( 'signed', ) ,
+                ( 'unsigned', ) ,
+                ( 'float', ) ,
+                ( 'double', ) ,
+                ( 'Type', 'star' ) ,
+                ( 'lpar', 'Type', 'rpar' ) ,
+            ),
+        'ParamList': (
+                ( 'Decl' ),
+                ( 'ParamList', 'dot', 'Decl', ),
+                ( ),
             ),
 }
 
 def accept_token(tks, start, _type):
     if start >= len(tks) or tks[start]._type not in _type:
         return 0, None
-    return 1, AST(tks[start]._type, tks[start])
+    #return 1, AST(tks[start]._type, tks[start])
+    return 1, AST(tks[start]._type, tks[start]._value)
 
 
-def accppt_param(tks, start):
+def accept_param(tks, start):
     if start >= len(tks):
         return 0, None
     size_type, ast_type = accept_type(tks, start)
@@ -39,7 +65,22 @@ def accppt_param(tks, start):
     size_id, ast_id = accept_token(tks, start, ('id', ))
     if size_id == 0:
         return 0, None
-    return size_type + size_id, AST('Param', (ast_type, ast_id))
+    start += size_id
+    size = size_type + size_id
+    ast = [ast_type, ast_id]
+    while True:
+        size_lbrkt, ast_lbrkt = accept_token(tks, start, ('lbrkt', ))
+        if size_lbrkt == 0:
+            break
+        start += size_lbrkt
+        size_rbrkt, ast_rbrkt = accept_token(tks, start, ('rbrkt', ))
+        if size_rbrkt == 0:
+            break
+        size += size_lbrkt + size_rbrkt
+        ast.append(ast_lbrkt)
+        ast.append(ast_rbrkt)
+
+    return size, AST('Param', tuple(ast))
 
 
 def accept_paramlist(tks, start):
