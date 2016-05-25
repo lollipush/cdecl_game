@@ -36,7 +36,11 @@ def tokenizer(s):
             t = i
             while s[i].isalnum() or s[i] == '_':
                 i += 1
-            yield Token('id', s[t:i])
+            v = s[t:i]
+            if v in ['int', 'char', 'float', 'double', 'unsigned', 'long', 'signed']:
+                yield Token('type', s[t:i])
+            else:
+                yield Token('id', s[t:i])
         elif s[i].isdigit():
             t = i
             while s[i].isdigit():
