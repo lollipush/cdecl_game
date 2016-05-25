@@ -37,7 +37,7 @@ def tokenizer(s):
             while s[i].isalnum() or s[i] == '_':
                 i += 1
             v = s[t:i]
-            if v in ['int', 'char', 'float', 'double', 'unsigned', 'long', 'signed']:
+            if v in ['int', 'char', 'float', 'double', 'unsigned', 'signed', 'short', 'long']:
                 yield Token('type', s[t:i])
             else:
                 yield Token('id', s[t:i])
