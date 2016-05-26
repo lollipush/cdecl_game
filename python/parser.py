@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 class AST(object):
     def __init__(self, _type, _value):
         print _type, _value
@@ -15,160 +17,37 @@ class AST(object):
         return '<{0} [{1}]>'.format(self._type, ', '.join(map(str, t)))
 
 
-grammar = {
-        'Main': (
-                ( 'DeclSpec', 'semicolon' ),
-            ),
-        'DeclSpec': (
-                ( 'StorageClassSpec', 'DeclSpec', ),
-                ( 'StorageClassSpec', ),
-                ( 'TypeSpec', 'DeclSpec', ),
-                ( 'TypeSpec', ),
-                ( 'TypeQualifier', 'DeclSpec', ),
-                ( 'TypeQualifier', ),
-            ),
-        'StorageClassSpec': (
-                ( 'auto', ),
-                ( 'register', ),
-                ( 'static', ),
-                ( 'extern', ),
-                ( 'typedef', ),
-            ),
-        'TypeSpec': (
-                ( 'void', ) ,
-                ( 'char', ) ,
-                ( 'short', ) ,
-                ( 'int', ) ,
-                ( 'long', ) ,
-                ( 'float', ) ,
-                ( 'double', ) ,
-                ( 'signed', ) ,
-                ( 'unsigned', ) ,
-                ( 'StructOrUnionSpec', ) ,
-                ( 'EnumSpec', ) ,
-                ( 'TypedefName', ) ,
-            ),
-        'TypeQualifier': (
-                ( 'const', ),
-                ( 'volatile', ),
-            ),
-        'StructOrUnionSpec': (
-                ( 'StructOrUnion', 'id', 'lbrace', 'StructDeclList', 'rbrace', ),
-                ( 'StructOrUnion', 'lbrace', 'StructDeclList', 'rbrace', ),
-                ( 'StructOrUnion', 'id', ),
-            ),
-        'StructOrUnion': (
-                ( 'struct', ),
-                ( 'union', ),
-            ),
-        'StructDeclList': (
-                ( 'StructDecl', ),
-                ( 'StructDeclList', 'StructDecl', ),
-            ),
-        'StructDecl': (
-                ( 'SpecQualifierList', 'StructDeclaratorList', 'semicolon', ),
-            ),
-        'SpecQualifierList': (
-                ( 'TypeSpec', 'SpecQualifierList', ),
-                ( 'TypeSpec', ),
-                ( 'TypeQualifier', 'SpecQualifierList', ),
-                ( 'TypeQualifier', ),
-            ),
-        'StructDeclaratorList': (
-                ( 'StructDeclarator', ),
-                ( 'StructDeclaratorList', 'comma', 'StructDeclarator', ),
-            ),
-        'StructDeclarator': (
-                ( 'Declarator', ),
-                ( 'Declarator', ':', 'ConstExp', ),
-                ( ':', 'ConstExp', ),
-            ),
-        'EnumSpec': (
-                ( 'enum', 'id', 'lbrace', 'EnumeratorList', 'rbrace', ),
-                ( 'enum', 'lbrace', 'EnumeratorList', 'rbrace', ),
-                ( 'enum', 'id', ),
-            ),
-        'EnumeratorList': (
-                ( 'Enumerator', ),
-                ( 'EnumeratorList', ',', 'Enumerator', ),
-            ),
-        'Enumerator': (
-                ( 'id', ),
-                ( 'id', 'assign', 'ConstExp', ),
-            ),
-        'TypedefName': (
-                ( 'id', ),
-            ),
-        'Declarator': (
-                ( 'Pointer', 'DirectDeclarator', ),
-                ( 'DirectDeclarator', ),
-            ),
-        'DirectDeclarator': (
-                ( 'id', ),
-                ( 'lpar', 'Declarator', 'rpar', ),
-                ( 'DirectDeclarator', 'lbrkt', 'ConstExp', 'rbrkt', ),
-                ( 'DirectDeclarator', 'lbrkt', 'rbrkt', ),
-                ( 'DirectDeclarator', 'lpar', 'ParamTypeList', 'rpar', ),
-                ( 'DirectDeclarator', 'lpar', 'IdList', 'rpar', ),
-                ( 'DirectDeclarator', 'lpar', 'rpar', ),
-            ),
-        'Pointer': (
-                ( 'star', 'TypeQualifierList', ),
-                ( 'star', ),
-                ( 'star', 'TypeQualifierList', 'Pointer', ),
-                ( 'star', 'Pointer', ),
-            ),
-        'TypeQualifierList': (
-                ( 'TypeQualifier', ),
-                ( 'TypeQualifierList', 'TypeQualifier', ),
-            ),
-        'ParamTypeList': (
-                ( 'ParamList', ),
-                ( 'ParamList', 'comma', 'ellipsis', ),
-            ),
-        'ParamList': (
-                ( 'ParamDecl', ),
-                ( 'ParamList', 'comma', 'ParamDecl', ),
-            ),
-        'ParamDecl': (
-                ( 'DeclSpecs', 'Declarator', ),
-                ( 'DeclSpecs', 'AbstractDeclarator', ),
-                ( 'DeclSpecs', ),
-            ),
-        'IdList': (
-                ( 'id', ),
-                ( 'IdList', 'comma', 'id', ),
-            ),
-        'Initializer': (
-                ( 'AssignmentExp', ),
-                ( 'lbrace', 'InitializerList', 'rbrace', ),
-                ( 'lbrace', 'InitializerList', 'comma', 'rbrace', ),
-            ),
-        'InitializerList': (
-                ( 'Initializer', ),
-                ( 'InitializerList', 'comma', 'Initializer', ),
-            ),
-        'TypeName': (
-                ( 'SpecQualifierList', 'AbstractDeclarator', ),
-                ( 'SpecQualifierList', ),
-            ),
-        'AbstractDeclarator': (
-                ( 'Pointer', ),
-                ( 'Pointer', 'DirectAbstractDeclarator', ),
-                ( 'DirectAbstractDeclarator', ),
-            ),
-        'DirectAbstractDeclarator': (
-                ( 'lpar', 'AbstractDeclarator', 'rpar', ),
-                ( 'DirectAbstractDeclarator', 'lbrkt', 'ConstExp', 'rbrkt', ),
-                ( 'lbrkt', 'ConstExp', 'rbrkt', ),
-                ( 'DirectAbstractDeclarator', 'lbrkt', 'rbrkt', ),
-                ( 'lbrkt', 'rbrkt', ),
-                ( 'DirectAbstractDeclarator', 'lpar', 'ParamTypeList', 'rpar', ),
-                ( 'lpar', 'ParamTypeList', 'rpar', ),
-                ( 'DirectAbstractDeclarator', 'lpar', 'rpar', ),
-                ( 'lpar', 'rpar', ),
-            ),
-}
+def read_bnf(s):
+    tks = s.split()
+    grammar = OrderedDict()
+    nsym = None
+    production = []
+    for i in tks:
+        if i == ':':
+            grammar[nsym] = []
+            production = []
+        elif i == '|':
+            grammar[nsym].append(production)
+            production = []
+        elif i == ';':
+            grammar[nsym].append(production)
+            production = []
+            nsym = None
+        elif (i[0] == '\'' and i[-1] == '\'') or i.isalpha():
+            if nsym:
+                production.append(i)
+            else:
+                nsym = i
+        else:
+            raise Exception('bnf syntax error: ' + i)
+    return grammar
+
+def print_bnf(grammar):
+    for nsym in grammar:
+        print nsym, ':'
+        print '\t' + ' |\n\t'.join([' '.join(production) for production in grammar[nsym]]) + ' ;'
+        print
+
 
 def accept_token(tks, start, _type):
     if start >= len(tks) or tks[start]._type not in _type:

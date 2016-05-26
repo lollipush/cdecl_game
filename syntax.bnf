@@ -1,0 +1,143 @@
+Declaration :
+    DeclarationSpecifiers ';' |
+    DeclarationSpecifiers InitDeclaratorList ';' ;
+
+DeclarationSpecifiers :
+    StorageClassSpecifier |
+    StorageClassSpecifier DeclarationSpecifiers |
+    TypeSpecifier |
+    TypeSpecifier DeclarationSpecifiers |
+    TypeQualifier |
+    TypeQualifier DeclarationSpecifiers ;
+
+InitDeclaratorList :
+    InitDeclarator |
+    InitDeclaratorList ',' InitDeclarator ;
+
+InitDeclarator :
+    Declarator ;
+
+StorageClassSpecifier :
+    'typedef' |
+    'extern' |
+    'static' |
+    'auto' |
+    'register' ;
+
+TypeSpecifier :
+    'void' |
+    'char' |
+    'short' |
+    'int' |
+    'long' |
+    'float' |
+    'double' |
+    'signed' |
+    'unsigned' |
+    StructOrUnionSpecifier |
+    EnumSpecifier |
+    identifier ;
+
+StructOrUnionSpecifier :
+    StructOrUnion identifier '{' StructDeclarationList '}' |
+    StructOrUnion '{' StructDeclarationList '}' |
+    StructOrUnion identifier ;
+
+StructOrUnion :
+    'struct' |
+    'union' ;
+
+StructDeclarationList :
+    StructDeclaration |
+    StructDeclarationList StructDeclaration ;
+
+StructDeclaration :
+    SpecifierQualifierList StructDeclaratorList ';' ;
+
+SpecifierQualifierList :
+    TypeSpecifier SpecifierQualifierList |
+    TypeSpecifier |
+    TypeQualifier SpecifierQualifierList |
+    TypeQualifier ;
+
+StructDeclaratorList :
+    StructDeclarator |
+    StructDeclaratorList ',' StructDeclarator ;
+
+StructDeclarator :
+    Declarator |
+    ':' number |
+    Declarator ':' number ;
+
+EnumSpecifier :
+    'enum' '{' EnumeratorList '}' |
+    'enum' identifier '{' EnumeratorList '}' |
+    'enum' identifier ;
+
+EnumeratorList :
+    Enumerator |
+    EnumeratorList ',' Enumerator ;
+
+Enumerator :
+    identifier |
+    identifier '=' number ;
+
+TypeQualifier :
+    'const' |
+    'volatile' ;
+
+Declarator :
+    Pointer DirectDeclarator |
+    DirectDeclarator ;
+
+DirectDeclarator :
+    identifier |
+    '(' Declarator ')' |
+    DirectDeclarator '[' number ']' |
+    DirectDeclarator '[' ']' |
+    DirectDeclarator '(' ParameterTypeList ')' |
+    DirectDeclarator '(' IdentifierList ')' |
+    DirectDeclarator '(' ')' ;
+
+Pointer :
+    '*' |
+    '*' TypeQualifierList |
+    '*' Pointer |
+    '*' TypeQualifierList Pointer ;
+
+TypeQualifierList :
+    TypeQualifier |
+    TypeQualifierList TypeQualifier ;
+
+ParameterTypeList :
+    ParameterList |
+    ParameterList ',' '...' ;
+
+ParameterList :
+    ParameterDeclaration |
+    ParameterList ',' ParameterDeclaration ;
+
+ParameterDeclaration :
+    DeclarationSpecifiers Declarator |
+    DeclarationSpecifiers AbstractDeclarator |
+    DeclarationSpecifiers ;
+
+IdentifierList :
+    identifier |
+    IdentifierList ',' identifier ;
+
+AbstractDeclarator :
+    Pointer |
+    DirectAbstractDeclarator |
+    Pointer DirectAbstractDeclarator ;
+
+DirectAbstractDeclarator :
+    '(' AbstractDeclarator ')' |
+    '[' ']' |
+    '[' number ']' |
+    DirectAbstractDeclarator '[' ']' |
+    DirectAbstractDeclarator '[' number ']' |
+    '(' ')' |
+    '(' ParameterTypeList ')' |
+    DirectAbstractDeclarator '(' ')' |
+    DirectAbstractDeclarator '(' ParameterTypeList ')' ;

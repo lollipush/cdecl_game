@@ -9,7 +9,7 @@ class Token(object):
     def __repr__(self):
         return '<{0} {1}>'.format(self._type, repr(self._value))
 
-keywords = ('auto', 'rigister', 'static', 'extern', 'typedef', 'const', 'volatile', 'void', 'char', 'short', 'int', 'long', 'float', 'double', 'unsigned', 'signed', 'struct', 'union', 'enum', )
+keywords = ('auto', 'rigister', 'static', 'extern', 'const', 'volatile', 'void', 'char', 'short', 'int', 'long', 'float', 'double', 'unsigned', 'signed', 'struct', 'union', 'enum', )
 
 def tokenizer(s):
     i = 0
