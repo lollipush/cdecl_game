@@ -17,34 +17,156 @@ class AST(object):
 
 grammar = {
         'Main': (
-                ( 'Decl', 'semicolon' ),
+                ( 'DeclSpec', 'semicolon' ),
             ),
-        'Decl': (
-                ( 'VarDecl', ),
-                ( 'FuncDecl', ),
-                ( 'lpar', 'Decl', 'rpar' ),
+        'DeclSpec': (
+                ( 'StorageClassSpec', 'DeclSpec', ),
+                ( 'StorageClassSpec', ),
+                ( 'TypeSpec', 'DeclSpec', ),
+                ( 'TypeSpec', ),
+                ( 'TypeQualifier', 'DeclSpec', ),
+                ( 'TypeQualifier', ),
             ),
-        'VarDecl': (
-                ( 'Type', 'id', 'lbrkt', 'number', 'rbrkt', ),
-                ( 'Type', 'lpar', 'start', 'id', 'rpar', 'lpar', 'ParamList', 'rpar', ),
+        'StorageClassSpec': (
+                ( 'auto', ),
+                ( 'register', ),
+                ( 'static', ),
+                ( 'extern', ),
+                ( 'typedef', ),
             ),
-        'FuncDecl': (
-                ( 'Type', 'id', 'lpar', 'ParamList', 'rpar', ),
-            ),
-        'Type': (
+        'TypeSpec': (
+                ( 'void', ) ,
                 ( 'char', ) ,
+                ( 'short', ) ,
                 ( 'int', ) ,
-                ( 'signed', ) ,
-                ( 'unsigned', ) ,
+                ( 'long', ) ,
                 ( 'float', ) ,
                 ( 'double', ) ,
-                ( 'Type', 'star' ) ,
-                ( 'lpar', 'Type', 'rpar' ) ,
+                ( 'signed', ) ,
+                ( 'unsigned', ) ,
+                ( 'StructOrUnionSpec', ) ,
+                ( 'EnumSpec', ) ,
+                ( 'TypedefName', ) ,
+            ),
+        'TypeQualifier': (
+                ( 'const', ),
+                ( 'volatile', ),
+            ),
+        'StructOrUnionSpec': (
+                ( 'StructOrUnion', 'id', 'lbrace', 'StructDeclList', 'rbrace', ),
+                ( 'StructOrUnion', 'lbrace', 'StructDeclList', 'rbrace', ),
+                ( 'StructOrUnion', 'id', ),
+            ),
+        'StructOrUnion': (
+                ( 'struct', ),
+                ( 'union', ),
+            ),
+        'StructDeclList': (
+                ( 'StructDecl', ),
+                ( 'StructDeclList', 'StructDecl', ),
+            ),
+        'StructDecl': (
+                ( 'SpecQualifierList', 'StructDeclaratorList', 'semicolon', ),
+            ),
+        'SpecQualifierList': (
+                ( 'TypeSpec', 'SpecQualifierList', ),
+                ( 'TypeSpec', ),
+                ( 'TypeQualifier', 'SpecQualifierList', ),
+                ( 'TypeQualifier', ),
+            ),
+        'StructDeclaratorList': (
+                ( 'StructDeclarator', ),
+                ( 'StructDeclaratorList', 'comma', 'StructDeclarator', ),
+            ),
+        'StructDeclarator': (
+                ( 'Declarator', ),
+                ( 'Declarator', ':', 'ConstExp', ),
+                ( ':', 'ConstExp', ),
+            ),
+        'EnumSpec': (
+                ( 'enum', 'id', 'lbrace', 'EnumeratorList', 'rbrace', ),
+                ( 'enum', 'lbrace', 'EnumeratorList', 'rbrace', ),
+                ( 'enum', 'id', ),
+            ),
+        'EnumeratorList': (
+                ( 'Enumerator', ),
+                ( 'EnumeratorList', ',', 'Enumerator', ),
+            ),
+        'Enumerator': (
+                ( 'id', ),
+                ( 'id', 'assign', 'ConstExp', ),
+            ),
+        'TypedefName': (
+                ( 'id', ),
+            ),
+        'Declarator': (
+                ( 'Pointer', 'DirectDeclarator', ),
+                ( 'DirectDeclarator', ),
+            ),
+        'DirectDeclarator': (
+                ( 'id', ),
+                ( 'lpar', 'Declarator', 'rpar', ),
+                ( 'DirectDeclarator', 'lbrkt', 'ConstExp', 'rbrkt', ),
+                ( 'DirectDeclarator', 'lbrkt', 'rbrkt', ),
+                ( 'DirectDeclarator', 'lpar', 'ParamTypeList', 'rpar', ),
+                ( 'DirectDeclarator', 'lpar', 'IdList', 'rpar', ),
+                ( 'DirectDeclarator', 'lpar', 'rpar', ),
+            ),
+        'Pointer': (
+                ( 'star', 'TypeQualifierList', ),
+                ( 'star', ),
+                ( 'star', 'TypeQualifierList', 'Pointer', ),
+                ( 'star', 'Pointer', ),
+            ),
+        'TypeQualifierList': (
+                ( 'TypeQualifier', ),
+                ( 'TypeQualifierList', 'TypeQualifier', ),
+            ),
+        'ParamTypeList': (
+                ( 'ParamList', ),
+                ( 'ParamList', 'comma', 'ellipsis', ),
             ),
         'ParamList': (
-                ( 'Decl' ),
-                ( 'ParamList', 'dot', 'Decl', ),
-                ( ),
+                ( 'ParamDecl', ),
+                ( 'ParamList', 'comma', 'ParamDecl', ),
+            ),
+        'ParamDecl': (
+                ( 'DeclSpecs', 'Declarator', ),
+                ( 'DeclSpecs', 'AbstractDeclarator', ),
+                ( 'DeclSpecs', ),
+            ),
+        'IdList': (
+                ( 'id', ),
+                ( 'IdList', 'comma', 'id', ),
+            ),
+        'Initializer': (
+                ( 'AssignmentExp', ),
+                ( 'lbrace', 'InitializerList', 'rbrace', ),
+                ( 'lbrace', 'InitializerList', 'comma', 'rbrace', ),
+            ),
+        'InitializerList': (
+                ( 'Initializer', ),
+                ( 'InitializerList', 'comma', 'Initializer', ),
+            ),
+        'TypeName': (
+                ( 'SpecQualifierList', 'AbstractDeclarator', ),
+                ( 'SpecQualifierList', ),
+            ),
+        'AbstractDeclarator': (
+                ( 'Pointer', ),
+                ( 'Pointer', 'DirectAbstractDeclarator', ),
+                ( 'DirectAbstractDeclarator', ),
+            ),
+        'DirectAbstractDeclarator': (
+                ( 'lpar', 'AbstractDeclarator', 'rpar', ),
+                ( 'DirectAbstractDeclarator', 'lbrkt', 'ConstExp', 'rbrkt', ),
+                ( 'lbrkt', 'ConstExp', 'rbrkt', ),
+                ( 'DirectAbstractDeclarator', 'lbrkt', 'rbrkt', ),
+                ( 'lbrkt', 'rbrkt', ),
+                ( 'DirectAbstractDeclarator', 'lpar', 'ParamTypeList', 'rpar', ),
+                ( 'lpar', 'ParamTypeList', 'rpar', ),
+                ( 'DirectAbstractDeclarator', 'lpar', 'rpar', ),
+                ( 'lpar', 'rpar', ),
             ),
 }
 
@@ -92,16 +214,16 @@ def accept_paramlist(tks, start):
         ast.append(_ast)
         start += size
         while True:
-            size_dot, ast_dot = accept_token(tks, start, ('dot', ))
-            if size_dot == 0:
+            size_comma, ast_comma = accept_token(tks, start, ('comma', ))
+            if size_comma == 0:
                 break
-            start += size_dot
+            start += size_comma
             size_param, ast_param = accept_param(tks, start)
             if size_param == 0:
                 break
             start += size_param
-            size += size_dot + size_param
-            ast.append(ast_dot)
+            size += size_comma + size_param
+            ast.append(ast_comma)
             ast.append(ast_param)
     return size, AST('ParamList', tuple(ast))
 
